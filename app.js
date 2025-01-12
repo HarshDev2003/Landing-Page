@@ -4,8 +4,24 @@ const session = require('express-session');
 const path = require('path');
 const app = express();
 const PORT = 5000;
-
+const mysql = require("mysql");
 // Middleware
+const db = mysql.createConnection({
+    host: "sql12.freesqldatabase.com",
+    user: "sql12757220",       // Replace with your DB username
+    password: "tzndJauJIt",       // Replace with your DB password
+    database: "sql12757220", // Replace with your database name
+  });
+  
+  // Connect to the database
+  db.connect((err) => {
+    if (err) {
+      console.error("Error connecting to the database:", err);
+      return;
+    }
+    console.log("Connected to MySQL database.");
+  });
+  
 app.set('view engine', 'ejs');
 app.use(express.static('public'));
 app.use(bodyParser.urlencoded({ extended: true }));
@@ -30,6 +46,18 @@ app.get('/ejs', (req, res) => {
   res.render('index');
 });
 
+app.get("/database", (req, res) => {
+    const query = "SELECT * FROM users";
+    db.query(query, (err, results) => {
+      if (err) {
+        console.error("Error fetching data:", err);
+        return res.status(500).send("Error fetching data.");
+      }
+  
+      // Render the EJS template with the data
+      res.render("index", { users: results });
+    });
+  });
 
 app.get('/', (req, res) => {
     res.sendFile(path.join(__dirname, 'index.html'));
