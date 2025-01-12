@@ -1,7 +1,7 @@
 const express = require('express');
 const bodyParser = require('body-parser');
 const session = require('express-session');
-
+const path = require('path');
 const app = express();
 const PORT = 5000;
 
@@ -9,7 +9,7 @@ const PORT = 5000;
 app.set('view engine', 'ejs');
 app.use(express.static('public'));
 app.use(bodyParser.urlencoded({ extended: true }));
-
+app.use(express.static(path.join(__dirname)));
 // Session Configuration
 app.use(
   session({
@@ -26,9 +26,14 @@ const users = {
 };
 
 // Routes
-app.get('/', (req, res) => {
+app.get('/ejs', (req, res) => {
   res.render('index');
 });
+
+
+app.get('/', (req, res) => {
+    res.sendFile(path.join(__dirname, 'index.html'));
+  });
 
 app.get('/login', (req, res) => {
   res.render('login', { error: null });
